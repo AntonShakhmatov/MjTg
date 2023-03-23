@@ -16,7 +16,7 @@ use TelegramBot\Api\Types\SendMessage;
 class TelegramPresenter extends BasePresenter{
     
     public function renderDefault() {
-        $discordToken = 'MTA4NDE3NDcxNjU2ODM0MjYwMQ.GmIb36.v0nc0z61RF4bfM9RjDqaYiX208p3cXBOkEi3BU';
+        $discordToken = 'MTA4NDE3NDcxNjU2ODM0MjYwMQ.Gto6Ex.qilHC4g3quan8rcMpCCui4U-2m9L5kE2QEqFTM';
         $channelId = '1084175599276413053';
         $baseUrl = 'https://discord.com/api/v9/';
 

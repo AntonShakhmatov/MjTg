@@ -5,46 +5,44 @@ namespace App\Presenters;
 use Nette;
 use Longman\TelegramBot\Telegram;
 use App\Presenters\BasePresenter;
-// use TelegramBot\Api\Client;
 use GuzzleHttp\Client;
 
 class GetMessagesPresenter extends BasePresenter{
 
 public function renderDefault(){
-    $discordToken = 'MTA4NDE3NDcxNjU2ODM0MjYwMQ.GmIb36.v0nc0z61RF4bfM9RjDqaYiX208p3cXBOkEi3BU';
+    $discordToken = 'MTA4NDE3NDcxNjU2ODM0MjYwMQ.Gto6Ex.qilHC4g3quan8rcMpCCui4U-2m9L5kE2QEqFTM';
     $discordChannelId = '1084175599276413053';
     $discordClientId = '1084458157734105139';
     $guildId = '1084175599276413050';
-    $baseUrl = 'https://discord.com/api/v9/';
-    $url = "{$baseUrl}channels/{$discordChannelId}/messages";
+    $baseUrl = 'https://discord.com/api/';
+    $url = "v9/{$baseUrl}channels/{$discordChannelId}/messages";
+    $curli = "v8/applications/{$discordClientId}/guilds/{$guildId}/commands";
+
+    $curl = curl_init($curli);
+    curl_setopt($curl, CURLOPT_HTTPHEADER, array(
+        "Content-Type: application/json",
+        "Authorization: Bot {$discordToken}"
+    ));
+    // curl_setopt($curl, CURLOPT_POSTFIELDS, json_encode($payload));
+    curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
+    $response = curl_exec($curl);
+    curl_close($curl);
+
+    var_dump($curl);
+
     $telegramToken = '5615810071:AAGMIW8UA_RT8Dd1o5qV_-NoazcC6LzWzCM';
     $website = 'https://api.telegram.org/bot' . $telegramToken;
     $update = file_get_contents($website . '/getUpdates');
-    $update = json_decode($update, true);
-    foreach($update['result'] as $newUpdate) {
+    $updates = json_decode($update, true);
+    foreach($updates['result'] as $newUpdate) {
         $text = $newUpdate['message']['text'];
     }
     echo $text;
 
-    $discordApiUrl = 'https://discord.com/api/v8';
     $client = new Client();
+    $command = '/imagine prompt: ';
 
-    // $response = $client->post("$discordApiUrl/applications/$clientId/guilds/$guildId/commands", [
-    //     'headers' => [
-    //       'Authorization' => "Bot $botToken",
-    //       'Content-Type' => 'application/json'
-    //     ],
-    
-    //     'json' => $data
-    //   ]);
-    
-    //   if ($response->getStatusCode() === 200) {
-    //     return "The command 'imagine' has been created!";
-    //   } else {
-    //     return "Error creating command: ".$response->getBody();
-    //   }
-
-    $webhookUrl = 'https://discord.com/api/webhooks/1085890462147162112/U1UakXp4-NWrjcMnnBOWB8TAMahuqiV0OA4_S5-HUkgaJNGFIOVqz6Rakc_ED5fOj-PC';
+    $webhookUrl = 'https://discord.com/api/webhooks/1084462908458668032/htdNJCXWHxxGoq_GBnCoQbND2PUqga6N_ngyJ60jGY3htMs4vBSME5X7RlxT80VPMapy';
 
     $messageData = array(
         'username' => 'Antoha',
