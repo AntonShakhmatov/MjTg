@@ -22,7 +22,8 @@
 		"team-reflex/discord-php": "^7.3",
 		"telegram-bot/api": "^2.3",
 		"longman/telegram-bot": "^0.80.0",
-		"guzzlehttp/guzzle": "^7.5"
+		"guzzlehttp/guzzle": "^7.5",
+		"discord-php/http": "^9.1"
 	},
 	"require-dev": {
 		"nette/tester": "^2.4",

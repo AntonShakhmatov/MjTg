@@ -6,57 +6,59 @@ use Nette;
 use Longman\TelegramBot\Telegram;
 use App\Presenters\BasePresenter;
 use GuzzleHttp\Client;
+use Discord\DiscordCommandClient;
+use Discord\Http\Drivers;
+use Nette\Database\Explorer;
 
 class GetMessagesPresenter extends BasePresenter{
 
+    /**
+     * @param Explorer
+     */
+    private $database;
+public function __construct(Explorer $database){
+    $this->database = $database;
+}
+
 public function renderDefault(){
-    $discordToken = 'MTA4NDE3NDcxNjU2ODM0MjYwMQ.Gto6Ex.qilHC4g3quan8rcMpCCui4U-2m9L5kE2QEqFTM';
-    $discordChannelId = '1084175599276413053';
-    $discordClientId = '1084458157734105139';
-    $guildId = '1084175599276413050';
-    $baseUrl = 'https://discord.com/api/';
-    $url = "v9/{$baseUrl}channels/{$discordChannelId}/messages";
-    $curli = "v8/applications/{$discordClientId}/guilds/{$guildId}/commands";
+$fields = $this->database->table('discord');
+foreach($fields as $field){
+    $id_discord = $field->id;
+    $guildId_discord = $field->guildId;
+    $channelId_discord = $field->channelId;
+    $application_id_discord = $field->application_id;
+    $command_id_discord = $field->command_id;
+    $midjourney_id_discord = $field->midjourney_id;
+    $token_discord = $field->token;
+    $token_bot_discord = $field->token_bot;
+}
+// // Получаем токен бота Discord
+$token = $token_discord;
+$token_bot = $token_bot_discord;
 
-    $curl = curl_init($curli);
-    curl_setopt($curl, CURLOPT_HTTPHEADER, array(
-        "Content-Type: application/json",
-        "Authorization: Bot {$discordToken}"
-    ));
-    // curl_setopt($curl, CURLOPT_POSTFIELDS, json_encode($payload));
-    curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
-    $response = curl_exec($curl);
-    curl_close($curl);
+// // Получаем ID сервера и канала, где хотим выполнить команду
+$guildId = $guildId_discord;
+$channelId = $channelId_discord;
+$application_id = $application_id_discord;
+$command_id = $command_id_discord;
+$midjourney_id = $midjourney_id_discord;
 
-    var_dump($curl);
+$headers = [
+    "Authorization: Bot {$token_bot}",
+    "Content-Type: application/json"
+];
 
-    $telegramToken = '5615810071:AAGMIW8UA_RT8Dd1o5qV_-NoazcC6LzWzCM';
-    $website = 'https://api.telegram.org/bot' . $telegramToken;
-    $update = file_get_contents($website . '/getUpdates');
-    $updates = json_decode($update, true);
-    foreach($updates['result'] as $newUpdate) {
-        $text = $newUpdate['message']['text'];
-    }
-    echo $text;
+// Отправляем запрос к команде на уровне сервера
+$ch = curl_init();
+curl_setopt($ch, CURLOPT_URL, "https://discord.com/api/v8/applications/{$application_id}/guilds/{$guildId}/commands/{$command_id}");
+curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
+$result = curl_exec($ch);
+curl_close($ch);
 
-    $client = new Client();
-    $command = '/imagine prompt: ';
+// Выводим результат в формате JSON
+echo $result;
 
-    $webhookUrl = 'https://discord.com/api/webhooks/1084462908458668032/htdNJCXWHxxGoq_GBnCoQbND2PUqga6N_ngyJ60jGY3htMs4vBSME5X7RlxT80VPMapy';
-
-    $messageData = array(
-        'username' => 'Antoha',
-        'content' => $text
-      );
-
-      $response = $client->request('POST', $webhookUrl, array(
-        'json' => $messageData
-      ));
-
-      if ($response->getStatusCode() == 204) {
-        echo 'Сообщение успешно отправлено на Discord!';
-      } else {
-        echo 'Произошла ошибка при отправке сообщения на Discord';
-      }
+$webhookUrl = 'https://discord.com/api/webhooks/1088480294228733983/wF2yW85g25D55KSJ4JQcng4cWK9jfStC-B2CneL3yH40mw82ZmHqahD8zIHCao2NhgKu';
 }
 }

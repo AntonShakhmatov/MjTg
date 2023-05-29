@@ -4,7 +4,7 @@ namespace App\Presenters;
 
 use Nette;
 use Nette\Http\Request;
-use  Nette\Http\Response;
+use Nette\Http\Response;
 use Discord\X;
 use Discord\Discord;
 use Discord\WebSockets\Intents;
@@ -12,12 +12,26 @@ use Discord\WebSockets\Event;
 use TelegramBot\Api\Client;
 use App\Presenters\BasePresenter;
 use TelegramBot\Api\Types\SendMessage;
+use Nette\Database\Explorer;
 
 class TelegramPresenter extends BasePresenter{
+
+    /**
+     * @param Explorer 
+     */
+    private $database;
+    public function __construct(Explorer $database){
+        $this->database = $database;
+    }
     
     public function renderDefault() {
-        $discordToken = 'MTA4NDE3NDcxNjU2ODM0MjYwMQ.Gto6Ex.qilHC4g3quan8rcMpCCui4U-2m9L5kE2QEqFTM';
-        $channelId = '1084175599276413053';
+        $fields = $this->database->table('discord');
+        foreach($fields as $field){
+            $token_discord = $field->token;
+            $channelId_discord = $field->channelId;
+        }
+        $discordToken = $token_discord;
+        $channelId = $channelId_discord;
         $baseUrl = 'https://discord.com/api/v9/';
 
         $url = "{$baseUrl}channels/{$channelId}/messages";
@@ -65,12 +79,18 @@ class TelegramPresenter extends BasePresenter{
 
     function actionDefault() 
     {
+        $tg_fields = $this->database->table('telegram');
+        foreach($tg_fields as $tg_field){
+        $token_telegram = $tg_field->token;
+        $channelId_telegram = $tg_field->channel_id;
+    }
     $this->renderDefault();
     $images = $this->template->images;
-    $chat_id = '793314390';
+    $chat_id = $channelId_telegram;
     $foo = 'Privet';
-    $TOKEN = "5824228201:AAEBCYaNaQEGnqfdrazTDjG4PNiW8dAsXI8";
+    $TOKEN = $token_telegram;//enter here tg token
     $TELEGRAM = "https://api.telegram.org/bot$TOKEN"; 
+    $url = '';
     foreach($images as $image){
     $url = $image;
     }
@@ -82,7 +102,5 @@ class TelegramPresenter extends BasePresenter{
     ));
     $response = file_get_contents("$TELEGRAM/sendMessage?$query");
     return $response;
-
     }
-
 }
